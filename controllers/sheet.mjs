@@ -27,12 +27,23 @@ const get_output = async (param, userInput) => {
             let arr = input.split('-')
             input = +arr[0]
             if (userInput <= arr[arr.length - 1]) {
-                console.log(input);
+                if (userInput === 0.5 && arr.length === 2) {
+                    // console.log(Input);
+                    return Output
+                }
+                if (userInput !== 0.5) {
+                    // console.log(Input);
+                    return Output
+                }
+            }
+            if (userInput > arr[arr.length - 1] && input >= 2) {
+                // console.log(Input);
                 return Output
             }
-        } else if (['Correct level', 'Behind the wheel', 'First time'].includes(param) && Parameter === param && userInput === Input) {
-            console.log(Input);
-            console.log(Parameter);
+        }
+        if (['Correct level', 'Behind the wheel', 'First time'].includes(param) && Parameter === param && userInput === Input) {
+            // console.log(Input);
+            // console.log(Parameter);
             return Output
         }
     }
@@ -40,6 +51,6 @@ const get_output = async (param, userInput) => {
 
 export default { get_output }
 
-// await get_output('Alchohol level', 0.4)
-// await get_output('First time', 'Yes')
+// console.log(await get_output('Alchohol level', 0.6))
+// console.log(await get_output('First time', 'Yes'));
 
