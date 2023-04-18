@@ -23,9 +23,24 @@ app.post('/webhook', async (req, res) => {
     let response = {}
 
     try {
-        if (intentName === 'IntenName') {
-            const output = await sheet.get_output(params.Parameter, params.Input)
-            response = utils.response(`${output}`)
+        switch (intentName) {
+            case 'First time - yes':
+                const output_yes = await sheet.get_output('First time', 'Yes')
+                response = utils.response(`${output_yes} What was the alcohol level?`)
+                break;
+            case 'First time - no':
+                const output_no = await sheet.get_output('First time', 'Yes')
+                response = utils.response(`${output_no} What was the alcohol level?`)
+                break;
+            case 'Alchohol level':
+            case 'Alchohol level followup':
+                const output_level = await sheet.get_output('Alchohol level', params.level)
+                response = utils.response(`${output_level}`)
+                console.log(output_level);
+                break;
+            default:
+                response = utils.response(`I could not undersatnd what you said please repeat again`)
+                break;
         }
     } catch (error) {
         console.log(error);
