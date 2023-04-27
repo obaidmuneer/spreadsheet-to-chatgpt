@@ -16,28 +16,41 @@ await doc.useServiceAccountAuth({
 await doc.loadInfo();
 const sheet = doc.sheetsByIndex[0];
 
+const parseNumber = (Input) => {
+    let input = Input.replace(/[<>]/g, "")
+    let arr = input.split('-')
+    return { arr, input: +arr[0] }
+}
+
+const findBigNum = (rows) => {
+    return rows.reduce((prevNum, row) => {
+        const { input } = parseNumber(row.Input)
+        if (!isNaN(input)) {
+            return input > prevNum ? input : prevNum;
+        } else {
+            return prevNum;
+        }
+    }, 0);
+}
+
 const get_output = async (param, userInput) => {
     const rows = await sheet.getRows()
+    const biggestNumber = findBigNum(rows)
 
     for (const row of rows) {
         const { Parameter, Input, Output } = row;
 
         if (Parameter === param && Parameter === 'Alchohol level') {
-            let input = Input.replace(/[<>]/g, "")
-            let arr = input.split('-')
-            input = +arr[0]
+            const { arr, input } = parseNumber(Input)
+
             if (userInput <= arr[arr.length - 1]) {
                 if (userInput === 0.5 && arr.length === 2) {
-                    // console.log(Input);
+                    return Output
+                } else if (userInput !== 0.5) {
                     return Output
                 }
-                if (userInput !== 0.5) {
-                    // console.log(Input);
-                    return Output
-                }
-            }
-            if (userInput > arr[arr.length - 1] && input >= 2) {
-                // console.log(Input);
+            } else if (userInput > arr[arr.length - 1] && input === biggestNumber) {
+                console.log('2nd else');
                 return Output
             }
         }
@@ -51,6 +64,6 @@ const get_output = async (param, userInput) => {
 
 export default { get_output }
 
-// console.log(await get_output('Alchohol level', 0.6))
+// console.log(await get_output('Alchohol level', 5))
 // console.log(await get_output('First time', 'Yes'));
 

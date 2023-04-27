@@ -29,7 +29,7 @@ app.post('/webhook', async (req, res) => {
                 response = utils.response(`${output_yes} What was the alcohol level?`)
                 break;
             case 'First time - no':
-                const output_no = await sheet.get_output('First time', 'Yes')
+                const output_no = await sheet.get_output('First time', 'No')
                 response = utils.response(`${output_no} What was the alcohol level?`)
                 break;
             case 'Alchohol level':
