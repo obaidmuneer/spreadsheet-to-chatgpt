@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { Document } from "langchain/document";
 
 dotenv.config()
 
@@ -15,6 +16,7 @@ await doc.useServiceAccountAuth({
 
 await doc.loadInfo();
 const sheet = doc.sheetsByIndex[0];
+await sheet.loadCells('B2');
 
 const parseNumber = (Input) => {
     let input = Input.replace(/[<>]/g, "")
@@ -33,7 +35,7 @@ const findBigNum = (rows) => {
     }, 0);
 }
 
-const get_output = async (param, userInput) => {
+export const get_output = async (param, userInput) => {
     const rows = await sheet.getRows()
     const biggestNumber = findBigNum(rows)
 
@@ -62,8 +64,24 @@ const get_output = async (param, userInput) => {
     }
 }
 
-export default { get_output }
+export const rows_to_json = async () => {
+    const rows = await sheet.getRows()
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.Input.toLowerCase() === 'false') {
+            return; // stop the function execution here
+        }
+    }
 
-// console.log(await get_output('Alchohol level', 5))
-// console.log(await get_output('First time', 'Yes'));
+    const json = rows.map(row => (
+        new Document({
+            pageContent:
+                `< Parameter : ${row.Parameter},
+                Input: ${row.Input} >
+                Response : \`\`\`${row.Output}\`\`\` `
+        })
+    ))
 
+    // console.log(json);
+    return json
+}
